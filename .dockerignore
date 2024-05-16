@@ -1,0 +1,26 @@
+# Ignore the local git directory
+.git/
+
+# Ignore all markdown files (e.g., README)
+*.md
+
+# Ignore compiled Go binaries, if built locally
+*.exe
+*.out
+main
+
+# Ignore Go test cache
+testcache/
+
+# Ignore any .env files containing local environment variables
+.env
+
+# Ignore vendor directory if dependencies are vendored
+vendor/
+
+# Ignore any IDE specific files
+.vscode/
+.idea/
+
+# Ignore any log files
+*.log
