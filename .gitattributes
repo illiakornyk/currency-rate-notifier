@@ -1,0 +1,7 @@
+# Ensure all text files use LF line endings in the repository
+* text=auto eol=lf
+
+# Specify the line endings for specific file types if needed
+*.sh text eol=lf
+*.py text eol=lf
+*.go text eol=lf
