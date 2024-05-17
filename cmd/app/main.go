@@ -23,9 +23,15 @@ func main() {
 
  	  // Retrieve the API key from the environment variable
     apiKey := os.Getenv("EXCHANGERATESAPI_KEY")
+	if apiKey == "" {
+		log.Fatal("EXCHANGERATESAPI_KEY is not set in .env file")
+	}
 
      // Construct the base URL
-    baseURL := "http://api.exchangeratesapi.io/v1/latest"
+    baseURL := os.Getenv("EXCHANGERATESAPI_BASE_URL")
+	if baseURL == "" {
+		log.Fatal("EXCHANGERATESAPI_BASE_URL is not set in .env file")
+	}
 
     // Create a URL object from the base URL
     u, err := url.Parse(baseURL)
