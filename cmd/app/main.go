@@ -13,26 +13,54 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main() {
+var (
+	apiKey string
+	baseURL string
+	db *sql.DB
+)
 
-	    // Load the .env file
-    err := godotenv.Load()
-    if err != nil {
-        log.Fatalf("Error loading .env file")
-    }
+func init() {
+	// Load the .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
 
- 	  // Retrieve the API key from the environment variable
-    apiKey := os.Getenv("EXCHANGERATESAPI_KEY")
+	// Retrieve the API key from the environment variable
+	apiKey = os.Getenv("EXCHANGERATESAPI_KEY")
 	if apiKey == "" {
 		log.Fatal("EXCHANGERATESAPI_KEY is not set in .env file")
 	}
 
-     // Construct the base URL
-    baseURL := os.Getenv("EXCHANGERATESAPI_BASE_URL")
+	// Retrieve the base URL from the environment variable
+	baseURL = os.Getenv("EXCHANGERATESAPI_BASE_URL")
 	if baseURL == "" {
 		log.Fatal("EXCHANGERATESAPI_BASE_URL is not set in .env file")
 	}
 
+	// Initialize the database connection
+	initDB()
+}
+
+func initDB() {
+	// Construct the DSN from the environment variables or directly.
+	dsn := "user:password@tcp(localhost:3306)/mydb"
+	var err error
+	db, err = sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatalf("Error opening database: %v", err)
+	}
+
+	// Check if the connection is successful.
+	err = db.Ping()
+	if err != nil {
+		log.Fatalf("Error connecting to the database: %v", err)
+	}
+
+	fmt.Println("Successfully connected to the database!")
+}
+
+func main() {
     // Create a URL object from the base URL
     u, err := url.Parse(baseURL)
     if err != nil {
@@ -50,33 +78,19 @@ func main() {
 
     // The fully constructed URL with the embedded API key and other parameters
     apiURL := u.String()
+
+    // Fetch the exchange rates data
     exchangeRatesData, err := exchange_rates.FetchExchangeRates(apiURL)
     if err != nil {
         log.Fatal(err)
     }
 
-	    // Use the exchangeRates data as needed
-    // For example, convert EUR to USD and UAH to USD
+    // Convert EUR to USD and UAH to USD
     usdToUahRate := utils.ConvertEURtoUSDUAH(exchangeRatesData.Rates["USD"], exchangeRatesData.Rates["UAH"])
 
     // Output the rate for verification
     log.Printf("USD to UAH rate: %f", usdToUahRate)
 
-    // Construct the DSN from the environment variables or directly.
-	dsn := "user:password@tcp(localhost:3306)/mydb"
 
-	// Open a connection to the database.
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	// Check if the connection is successful.
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Successfully connected to the database!")
+    fmt.Println("Operation completed successfully.")
 }
