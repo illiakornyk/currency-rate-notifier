@@ -43,7 +43,8 @@ func FetchExchangeRateData(apiURL string) (float64, error) {
 func RatesHandler(w http.ResponseWriter, r *http.Request) {
 	apiURL, err := ConstructAPIURL()
 	if err != nil {
-		log.Fatal(err) // Consider using http.Error to send a proper HTTP response
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
 		return
 	}
 
