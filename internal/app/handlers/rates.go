@@ -28,15 +28,30 @@ func ConstructAPIURL() (string, error) {
 	return u.String(), nil
 }
 
-// FetchAndRespondExchangeRate fetches the exchange rates and writes the response.
-func FetchAndRespondExchangeRate(w http.ResponseWriter, apiURL string) {
+// FetchExchangeRateData fetches the exchange rate data and returns it.
+func FetchExchangeRateData(apiURL string) (float64, error) {
 	exchangeRatesData, err := exchange_rates.FetchExchangeRates(apiURL)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return 0, err
 	}
 
 	usdToUahRate := utils.ConvertEURtoUSDUAH(exchangeRatesData.Rates["USD"], exchangeRatesData.Rates["UAH"])
+	return usdToUahRate, nil
+}
+
+// RatesHandler handles requests for the /rates route.
+func RatesHandler(w http.ResponseWriter, r *http.Request) {
+	apiURL, err := ConstructAPIURL()
+	if err != nil {
+		log.Fatal(err) // Consider using http.Error to send a proper HTTP response
+		return
+	}
+
+	usdToUahRate, err := FetchExchangeRateData(apiURL)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	type response struct {
 		Rate float64 `json:"rate"`
@@ -44,14 +59,4 @@ func FetchAndRespondExchangeRate(w http.ResponseWriter, apiURL string) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response{Rate: usdToUahRate})
-}
-
-// RatesHandler handles requests for the /rates route.
-func RatesHandler(w http.ResponseWriter, r *http.Request) {
-	apiURL, err := ConstructAPIURL()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	FetchAndRespondExchangeRate(w, apiURL)
 }
