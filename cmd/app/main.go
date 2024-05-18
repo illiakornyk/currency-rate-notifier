@@ -18,6 +18,7 @@ func main() {
 	http.HandleFunc("/rate", handlers.RatesHandler)
 	http.HandleFunc("/subscribe", handlers.SubscribeHandler)
 
+
 	fmt.Println("Email inserted successfully!")
 
 	fmt.Println("Server is running on port 8080...")

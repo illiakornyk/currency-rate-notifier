@@ -2,6 +2,7 @@ package subscription
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/config"
 )
@@ -22,4 +23,36 @@ func InsertEmail(email string) error {
 	}
 
 	return nil
+}
+
+// GetAllEmails retrieves all email addresses from the database.
+func GetAllEmails() ([]string, error) {
+	var emails []string
+
+	// Prepare the query to select all emails
+	query := "SELECT email FROM emails"
+	rows, err := config.DB.Query(query)
+	if err != nil {
+		log.Printf("Error querying emails: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	// Iterate over the rows and append each email to the slice
+	for rows.Next() {
+		var email string
+		if err := rows.Scan(&email); err != nil {
+			log.Printf("Error scanning email: %v", err)
+			return nil, err
+		}
+		emails = append(emails, email)
+	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		log.Printf("Error iterating over rows: %v", err)
+		return nil, err
+	}
+
+	return emails, nil
 }
