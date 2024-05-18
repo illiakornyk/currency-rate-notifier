@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"net/mail"
 
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/subscription"
 )
@@ -20,11 +21,21 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Initialize a new json.Decoder instance
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields() // Disallow unknown fields
+
 	// Parse the JSON body
 	var req EmailRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := decoder.Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validate the email format
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		http.Error(w, "Invalid email format", http.StatusBadRequest)
 		return
 	}
 
