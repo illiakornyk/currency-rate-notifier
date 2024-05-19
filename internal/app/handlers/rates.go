@@ -41,6 +41,11 @@ func FetchExchangeRateData(apiURL string) (float64, error) {
 
 // RatesHandler handles requests for the /rates route.
 func RatesHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	apiURL, err := ConstructAPIURL()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
