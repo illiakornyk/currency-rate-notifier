@@ -13,7 +13,6 @@ import (
 
 
 func main() {
-
 	config.Init()
 
 	http.HandleFunc("/rate", handlers.RatesHandler)

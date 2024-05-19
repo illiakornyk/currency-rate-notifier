@@ -6,18 +6,17 @@ WORKDIR /app
 
 # Copy the go module files and download dependencies
 COPY go.mod ./
-# COPY go.sum ./
-
+COPY go.sum ./
 RUN go mod download
 
 # Copy the rest of the source code
 COPY . .
 
-# Build the Go app
-RUN go build -o main .
+# Build the Go app from the /cmd/app directory
+RUN go build -o /app/main ./cmd/app
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
 # Run the executable
-CMD ["./main"]
+CMD ["/app/main"]

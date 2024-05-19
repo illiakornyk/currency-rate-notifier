@@ -15,5 +15,28 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      APP_PASSWORD: ${APP_PASSWORD}
+      APP_USER: ${APP_USER}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      GMAIL_SMTP_PASSWORD: ${GMAIL_SMTP_PASSWORD}
+      GMAIL_SMTP_EMAIL: ${GMAIL_SMTP_EMAIL}
+      EXCHANGERATESAPI_KEY: ${EXCHANGERATESAPI_KEY}
+      EXCHANGERATESAPI_BASE_URL: ${EXCHANGERATESAPI_BASE_URL}
+
 volumes:
   db-data:
