@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/config"
+	"github.com/illiakornyk/currency-rate-notifier/internal/app/models"
 )
 
 // InsertEmail inserts the provided email into the database.
@@ -19,6 +21,12 @@ func InsertEmail(email string) error {
 	// Execute the statement with the provided email
 	_, err = stmt.Exec(email)
 	if err != nil {
+		// Check if the error is a MySQL duplicate entry error
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
+			// Return the custom error message for duplicate email
+			return fmt.Errorf(models.ErrEmailAlreadySubscribed)
+		}
+		// For other errors, return a generic error message
 		return fmt.Errorf("error executing statement: %w", err)
 	}
 

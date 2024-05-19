@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/mail"
 
+	"github.com/illiakornyk/currency-rate-notifier/internal/app/models"
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/subscription"
 )
 
@@ -42,10 +43,15 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	// Insert the email into the database
 	err = subscription.InsertEmail(req.Email)
 	if err != nil {
+	if err.Error() == models.ErrEmailAlreadySubscribed {
+		// If the error is due to a duplicate email, send a 400 Bad Request response
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		// For all other errors, send a 500 Internal Server Error response
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
-
+	return
+}
 	// Respond to the client
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Subscription successful"))
