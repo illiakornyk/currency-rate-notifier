@@ -44,8 +44,8 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	err = subscription.InsertEmail(req.Email)
 	if err != nil {
 	if err.Error() == models.ErrEmailAlreadySubscribed {
-		// If the error is due to a duplicate email, send a 400 Bad Request response
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		// If the error is due to a duplicate email, send a 409 Conflict response
+		http.Error(w, err.Error(), http.StatusConflict)
 	} else {
 		// For all other errors, send a 500 Internal Server Error response
 		http.Error(w, err.Error(), http.StatusInternalServerError)

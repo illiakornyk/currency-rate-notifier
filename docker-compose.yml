@@ -37,6 +37,19 @@ services:
       GMAIL_SMTP_EMAIL: ${GMAIL_SMTP_EMAIL}
       EXCHANGERATESAPI_KEY: ${EXCHANGERATESAPI_KEY}
       EXCHANGERATESAPI_BASE_URL: ${EXCHANGERATESAPI_BASE_URL}
+  migrator:
+    build: .
+    environment:
+      DB_HOST: ${MYSQL_HOST}
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+    volumes:
+      - ./internal/app/storage/migrations:/migrations
+    depends_on:
+      - db
+    command: /bin/sh -c "sleep 30 && goose -dir /migrations mysql '${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(${MYSQL_HOST}:3306)/${MYSQL_DATABASE}?parseTime=true' up"
 
 volumes:
   db-data:

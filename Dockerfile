@@ -1,6 +1,12 @@
 # Use an official Go runtime as a parent image
 FROM golang:1.22.3-alpine3.18
 
+# Install git, required for fetching the dependencies
+RUN apk add --no-cache git
+
+# Install Goose
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest
+
 # Set the working directory in the container
 WORKDIR /app
 
