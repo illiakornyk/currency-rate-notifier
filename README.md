@@ -57,7 +57,7 @@ With the `.env` file in place, you can start the project using Docker Compose:
 docker-compose up --build
 ```
 
-This command will build the images and start the containers as defined in your docker-compose.yml file.
+This command will build the images and start the containers as defined in your `docker-compose.yml` file.
 
 ## Testing the Project
 
@@ -123,6 +123,18 @@ Unit tests have been created to ensure the reliability and correctness of the ap
 - **Validation**: Ensures that the `InsertEmail` function can handle new and duplicate email entries appropriately and that the `GetAllEmails` function accurately retrieves the list of subscribers.
 
 These initial tests lay the groundwork for a robust testing suite. Future enhancements will include more comprehensive test coverage, ensuring that all critical logic paths are thoroughly validated for correctness and stability.
+
+### Running Tests with Docker Compose
+
+To execute the unit tests, we utilize a separate Docker Compose service that is specifically configured for testing. This ensures that tests are run in an environment that closely mirrors the conditions under which the application will run, without interfering with the development or production databases.
+
+To run the tests, use the following command:
+
+```sh
+docker-compose --profile test up
+```
+
+This command activates the test profile, which is defined in the `docker-compose.yml` file. When this profile is activated, Docker Compose starts the test service that runs the unit tests.
 
 ## Tools and Libraries
 
