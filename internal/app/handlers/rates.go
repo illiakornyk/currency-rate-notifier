@@ -8,7 +8,7 @@ import (
 
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/config"
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/exchange_rates"
-	"github.com/illiakornyk/currency-rate-notifier/internal/app/utils"
+	"github.com/illiakornyk/currency-rate-notifier/internal/app/models"
 )
 
 // ConstructAPIURL constructs the URL to fetch exchange rates.
@@ -19,7 +19,7 @@ func ConstructAPIURL() (string, error) {
 	}
 
 	q := u.Query()
-	q.Set("access_key", config.APIKey)
+	// q.Set("access_key", config.APIKey)
 	q.Set("symbols", "USD,UAH")
 	q.Set("format", "1")
 
@@ -29,14 +29,13 @@ func ConstructAPIURL() (string, error) {
 }
 
 // FetchExchangeRateData fetches the exchange rate data and returns it.
-func FetchExchangeRateData(apiURL string) (float64, error) {
+func FetchExchangeRateData(apiURL string) ([]models.CurrencyInfo, error) {
 	exchangeRatesData, err := exchange_rates.FetchExchangeRates(apiURL)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	usdToUahRate := utils.ConvertEURtoUSDUAH(exchangeRatesData.Rates["USD"], exchangeRatesData.Rates["UAH"])
-	return usdToUahRate, nil
+	return exchangeRatesData, nil
 }
 
 // RatesHandler handles requests for the /rates route.
@@ -46,6 +45,7 @@ func RatesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Assuming ConstructAPIURL function is updated to construct the new API URL
 	apiURL, err := ConstructAPIURL()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -53,16 +53,12 @@ func RatesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usdToUahRate, err := FetchExchangeRateData(apiURL)
+	currencyInfos, err := exchange_rates.FetchExchangeRates(apiURL)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	type response struct {
-		Rate float64 `json:"rate"`
-	}
-
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response{Rate: usdToUahRate})
+	json.NewEncoder(w).Encode(currencyInfos)
 }

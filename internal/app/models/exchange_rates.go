@@ -1,10 +1,10 @@
 package models
 
 // ExchangeRatesResponse represents the response structure from the exchange rates API
-type ExchangeRatesResponse struct {
-    Success   bool              `json:"success"`
-    Timestamp int64             `json:"timestamp"`
-    Base      string            `json:"base"`
-    Date      string            `json:"date"`
-    Rates     map[string]float64 `json:"rates"`
+type CurrencyInfo struct {
+	R030         int     `json:"r030"`
+	Txt          string  `json:"txt"`
+	Rate         float64 `json:"rate"`
+	Cc           string  `json:"cc"`
+	ExchangeDate string  `json:"exchangedate"`
 }
