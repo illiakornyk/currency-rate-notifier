@@ -41,7 +41,7 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert the email into the database
-	err = subscription.InsertEmail(req.Email)
+	err = subscription.AddSubscriber(req.Email)
 	if err != nil {
 	if err.Error() == models.ErrEmailAlreadySubscribed {
 		// If the error is due to a duplicate email, send a 409 Conflict response

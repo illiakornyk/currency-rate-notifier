@@ -120,7 +120,7 @@ Unit tests have been created to ensure the reliability and correctness of the ap
 
 - **Purpose**: To test the database operations related to subscribing users, specifically the insertion of emails and retrieval of all subscribed emails.
 - **Method**: Utilizes mock SQL to simulate database interactions, allowing the tests to run without a real database connection.
-- **Validation**: Ensures that the `InsertEmail` function can handle new and duplicate email entries appropriately and that the `GetAllEmails` function accurately retrieves the list of subscribers.
+- **Validation**: Ensures that the `AddSubscriber` function can handle new and duplicate email entries appropriately and that the `RetrieveSubscribers` function accurately retrieves the list of subscribers.
 
 These initial tests lay the groundwork for a robust testing suite. Future enhancements will include more comprehensive test coverage, ensuring that all critical logic paths are thoroughly validated for correctness and stability.
 

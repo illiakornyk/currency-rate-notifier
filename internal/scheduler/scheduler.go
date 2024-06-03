@@ -33,7 +33,7 @@ func SetupCronJobs() {
 		}
 
 		// Retrieve all subscribed email addresses
-		emails, err := subscription.GetAllEmails()
+		emails, err := subscription.RetrieveSubscribers()
 		if err != nil {
 			log.Println("Error retrieving emails:", err)
 			return

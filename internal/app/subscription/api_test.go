@@ -8,7 +8,7 @@ import (
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/config"
 )
 
-func TestInsertEmail(t *testing.T) {
+func TestAddSubscriber(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -24,7 +24,7 @@ func TestInsertEmail(t *testing.T) {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	// Call the function to test
-	err = InsertEmail("test@example.com")
+	err = AddSubscriber("test@example.com")
 	if err != nil {
 		t.Errorf("error was not expected while inserting email: %s", err)
 	}
@@ -36,7 +36,7 @@ func TestInsertEmail(t *testing.T) {
 }
 
 
-func TestGetAllEmails(t *testing.T) {
+func TestRetrieveSubscribers(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -53,7 +53,7 @@ func TestGetAllEmails(t *testing.T) {
 		WillReturnRows(rows)
 
 	// Call the function to test
-	emails, err := GetAllEmails()
+	emails, err := RetrieveSubscribers()
 	if err != nil {
 		t.Errorf("error was not expected while getting emails: %s", err)
 	}
