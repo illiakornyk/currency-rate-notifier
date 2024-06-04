@@ -43,22 +43,36 @@ func RatesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
-	}
-
-	// Assuming ConstructAPIURL function is updated to construct the new API URL
-	apiURL, err := ConstructAPIURL()
-	if err != nil {
+	  }
+	
+	  queryParams := r.URL.Query()
+	  currencyParam := queryParams.Get("currency")
+	
+	  apiURL, err := ConstructAPIURL()
+	  if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 		return
-	}
-
-	currencyInfos, err := exchange_rates.FetchExchangeRates(apiURL)
-	if err != nil {
+	  }
+	
+	  currencyInfos, err := exchange_rates.FetchExchangeRates(apiURL)
+	  if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(currencyInfos)
+	  }
+	
+	  if currencyParam != "" {
+		for _, info := range currencyInfos {
+		  if info.Cc == currencyParam {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(info)
+			return
+		  }
+		}
+		http.Error(w, "Currency not found", http.StatusNotFound)
+		return
+	  }
+	
+	  w.Header().Set("Content-Type", "application/json")
+	  json.NewEncoder(w).Encode(currencyInfos)
 }
