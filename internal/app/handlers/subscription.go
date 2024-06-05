@@ -18,7 +18,7 @@ type EmailRequest struct {
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	// Only allow POST method
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method is not supported.", http.StatusMethodNotAllowed)
+		http.Error(w, models.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 		return
 	}
 
