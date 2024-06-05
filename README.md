@@ -1,12 +1,19 @@
 # Currency Rate Notifier
 
-This project is a currency rate notifier that allows users to subscribe and receive daily updates on the exchange rate between USD and UAH.
+This project is a comprehensive currency rate notifier that enables users to subscribe and receive daily updates on exchange rates for a variety of currencies with respect to UAH.
 
 ![Project Logo](./assets/logo.png)
 
 ## Design Document
 
 For a detailed explanation of the project's architecture, business logic, and decision-making process, please refer to our [design document](https://docs.google.com/document/d/13tbz5dt9VKAR700mxfR2BtWQoK85141hCbgxHePKGYk/edit?usp=sharing)
+
+## Team
+
+This project was brought to life by a dedicated team of two:
+
+- **Illia Kornyk** - Team Lead & Developer
+- **Anastasya Golubenko** - Developer & Tester
 
 ## Getting Started
 
