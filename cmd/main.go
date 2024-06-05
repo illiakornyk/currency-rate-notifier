@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/illiakornyk/currency-rate-notifier/cmd/api"
 	"github.com/illiakornyk/currency-rate-notifier/internal/app/config"
-	"github.com/illiakornyk/currency-rate-notifier/internal/app/handlers"
 	"github.com/illiakornyk/currency-rate-notifier/internal/scheduler"
 )
 
@@ -15,8 +15,7 @@ import (
 func main() {
 	config.Init()
 
-	http.HandleFunc("/rate", handlers.RatesHandler)
-	http.HandleFunc("/subscribe", handlers.SubscribeHandler)
+	api.RunApiServer()
 
 	scheduler.SetupCronJobs()
 
