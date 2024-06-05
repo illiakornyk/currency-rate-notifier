@@ -45,8 +45,7 @@ func SetupCronJobs() {
 			emailSender := os.Getenv("GMAIL_SMTP_EMAIL")
 			emailSenderPassword := os.Getenv("GMAIL_SMTP_PASSWORD")
 			subject := "Daily Exchange Rate"
-			body := fmt.Sprintf("The current USD to UAH exchange rate is: %.2f", exchangeRate)
-
+			body := fmt.Sprintf("The current USD to UAH exchange rate is: %.2f", exchangeRate[0].Rate)
 			err := email.SendEmail(emailSender, emailSenderPassword, receiverEmail, subject, body);
 
 			if err != nil {

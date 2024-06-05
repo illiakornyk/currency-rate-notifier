@@ -11,11 +11,18 @@ import (
 
 func TestFetchExchangeRates(t *testing.T) {
 	// Define a mock response
-	mockResponse := &models.ExchangeRatesResponse{
-		Success: true,
-		Rates: map[string]float64{
-			"USD": 1.2,
-			"UAH": 39.2,
+	mockResponse := []models.CurrencyInfo{
+		{
+			Txt:          "Австралійський долар",
+			Rate:         1.2,
+			Cc:           "AUD",
+			ExchangeDate: "05.06.2024",
+		},
+		{
+			Txt:          "Канадський долар",
+			Rate:         39.2,
+			Cc:           "CAD",
+			ExchangeDate: "05.06.2024",
 		},
 	}
 
@@ -27,20 +34,25 @@ func TestFetchExchangeRates(t *testing.T) {
 	defer server.Close()
 
 	// Call the function with the mock server URL
-	exchangeRates, err := FetchExchangeRates(server.URL)
+	currencyInfos, err := FetchExchangeRates(server.URL)
 	if err != nil {
 		t.Fatalf("FetchExchangeRates returned an error: %v", err)
 	}
 
 	// Assert that the response matches the mock response
-	if exchangeRates.Success != mockResponse.Success {
-		t.Errorf("Expected Success to be %v, got %v", mockResponse.Success, exchangeRates.Success)
-	}
-	if exchangeRates.Rates["USD"] != mockResponse.Rates["USD"] {
-		t.Errorf("Expected USD rate to be %v, got %v", mockResponse.Rates["USD"], exchangeRates.Rates["USD"])
-	}
-	if exchangeRates.Rates["UAH"] != mockResponse.Rates["UAH"] {
-		t.Errorf("Expected UAH rate to be %v, got %v", mockResponse.Rates["UAH"], exchangeRates.Rates["UAH"])
+	for i, info := range currencyInfos {
+		if info.Txt != mockResponse[i].Txt {
+			t.Errorf("Expected Txt to be %v, got %v", mockResponse[i].Txt, info.Txt)
+		}
+		if info.Rate != mockResponse[i].Rate {
+			t.Errorf("Expected Rate to be %v, got %v", mockResponse[i].Rate, info.Rate)
+		}
+		if info.Cc != mockResponse[i].Cc {
+			t.Errorf("Expected Cc to be %v, got %v", mockResponse[i].Cc, info.Cc)
+		}
+		if info.ExchangeDate != mockResponse[i].ExchangeDate {
+			t.Errorf("Expected ExchangeDate to be %v, got %v", mockResponse[i].ExchangeDate, info.ExchangeDate)
+		}
 	}
 }
 

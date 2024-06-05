@@ -18,15 +18,9 @@ func ConstructAPIURL() (string, error) {
 		return "", err
 	}
 
-	q := u.Query()
-	// q.Set("access_key", config.APIKey)
-	q.Set("symbols", "USD,UAH")
-	q.Set("format", "1")
-
-	u.RawQuery = q.Encode()
-
 	return u.String(), nil
 }
+
 
 // FetchExchangeRateData fetches the exchange rate data and returns it.
 func FetchExchangeRateData(apiURL string) ([]models.CurrencyInfo, error) {
@@ -41,26 +35,26 @@ func FetchExchangeRateData(apiURL string) ([]models.CurrencyInfo, error) {
 // RatesHandler handles requests for the /rates route.
 func RatesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, models.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
 		return
 	  }
-	
+
 	  queryParams := r.URL.Query()
 	  currencyParam := queryParams.Get("currency")
-	
+
 	  apiURL, err := ConstructAPIURL()
 	  if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 		return
 	  }
-	
+
 	  currencyInfos, err := exchange_rates.FetchExchangeRates(apiURL)
 	  if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	  }
-	
+
 	  if currencyParam != "" {
 		for _, info := range currencyInfos {
 		  if info.Cc == currencyParam {
@@ -69,10 +63,10 @@ func RatesHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		  }
 		}
-		http.Error(w, "Currency not found", http.StatusNotFound)
+		http.Error(w, models.ErrCurrencyNotFound, http.StatusNotFound)
 		return
 	  }
-	
+
 	  w.Header().Set("Content-Type", "application/json")
 	  json.NewEncoder(w).Encode(currencyInfos)
 }
