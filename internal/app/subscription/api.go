@@ -30,3 +30,15 @@ func RetrieveSubscribers() ([]string, error) {
 	}
 	return emails, nil
 }
+
+
+func RemoveSubscriber(email string) error {
+	err := deleteEmail(email)
+	if err != nil {
+		// Log the error and return a user-friendly message
+		log.Printf("Error removing subscriber: %v", err)
+		return fmt.Errorf("error removing subscriber: %w", err)
+	}
+
+	return nil
+}
