@@ -45,3 +45,29 @@ func fetchEmails() ([]string, error) {
 
 	return emails, nil
 }
+
+
+func deleteEmail(email string) error {
+	stmt, err := config.DB.Prepare("DELETE FROM emails WHERE email = ?")
+	if err != nil {
+		return fmt.Errorf("error preparing delete statement: %w", err)
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(email)
+	if err != nil {
+		return fmt.Errorf("error executing delete statement: %w", err)
+	}
+
+	// Check if the email was actually deleted
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error checking affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no rows affected, email may not exist")
+	}
+
+	return nil
+}

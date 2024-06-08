@@ -14,14 +14,19 @@ type EmailRequest struct {
 	Email string `json:"email"`
 }
 
-// SubscribeHandler handles requests for the /subscribe route
 func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
-	// Only allow POST method
-	if r.Method != http.MethodPost {
+	switch r.Method {
+	case http.MethodPost:
+		subscribe(w, r)
+	case http.MethodDelete:
+		unsubscribe(w, r)
+	default:
 		http.Error(w, models.ErrMethodNotAllowed, http.StatusMethodNotAllowed)
-		return
 	}
+}
 
+// subscribe handles subscription requests
+func subscribe(w http.ResponseWriter, r *http.Request) {
 	// Initialize a new json.Decoder instance
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields() // Disallow unknown fields
@@ -55,4 +60,37 @@ func SubscribeHandler(w http.ResponseWriter, r *http.Request) {
 	// Respond to the client
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Subscription successful"))
+}
+
+// unsubscribe handles unsubscription requests
+func unsubscribe(w http.ResponseWriter, r *http.Request) {
+	// Initialize a new json.Decoder instance
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields() // Disallow unknown fields
+
+	// Parse the JSON body
+	var req EmailRequest
+	err := decoder.Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validate the email format
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		http.Error(w, "Invalid email format", http.StatusBadRequest)
+		return
+	}
+
+	// Remove the email from the database
+	err = subscription.RemoveSubscriber(req.Email)
+	if err != nil {
+		// Handle errors, e.g., email not found or server error
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Respond to the client
+	w.WriteHeader(http.StatusNoContent)
+	w.Write([]byte("Unsubscription successful"))
 }
