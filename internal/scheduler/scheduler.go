@@ -19,17 +19,29 @@ func SetupCronJobs() {
 	c := cron.New(cron.WithLocation(loc), cron.WithLogger(cron.VerbosePrintfLogger(log.New(os.Stdout, "cron: ", log.LstdFlags))))
 
 	// Schedule the job to run every day at 8 AM Kyiv time
-	_, err := c.AddFunc("0 8 * * *", func() {
+_, err := c.AddFunc("0 8 * * *", func() {
 		apiURL, err := handlers.ConstructAPIURL()
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
 
-		exchangeRate, err := handlers.FetchExchangeRateData(apiURL)
+		exchangeRates, err := handlers.FetchExchangeRateData(apiURL)
 		if err != nil {
 			log.Println("Error fetching exchange rate:", err)
 			return
+		}
+
+		exchangeDate := exchangeRates[0].ExchangeDate
+
+		// Filter for EUR and USD rates
+		var eurRate, usdRate float64
+		for _, rate := range exchangeRates {
+			if rate.Cc == "EUR" {
+				eurRate = rate.Rate
+			} else if rate.Cc == "USD" {
+				usdRate = rate.Rate
+			}
 		}
 
 		// Retrieve all subscribed email addresses
@@ -39,15 +51,15 @@ func SetupCronJobs() {
 			return
 		}
 
-		// Send an email to each address
+		// Send an email to each address with EUR and USD rates
 		for _, receiverEmail := range emails {
-
 			emailSender := os.Getenv("GMAIL_SMTP_EMAIL")
 			emailSenderPassword := os.Getenv("GMAIL_SMTP_PASSWORD")
 			subject := "Daily Exchange Rate"
-			body := fmt.Sprintf("The current USD to UAH exchange rate is: %.2f", exchangeRate[0].Rate)
-			err := email.SendEmail(emailSender, emailSenderPassword, receiverEmail, subject, body);
 
+			body := fmt.Sprintf("Today's exchange rates for %s are:\nEUR to UAH: %.2f\nUSD to UAH: %.2f", exchangeDate, eurRate, usdRate)
+
+			err := email.SendEmail(emailSender, emailSenderPassword, receiverEmail, subject, body)
 			if err != nil {
 				log.Println("Error sending email to", receiverEmail, ":", err)
 			}
